@@ -1,0 +1,482 @@
+/* Canberra */
+/*
+19/10/2020
+by: Zetnus
+
+21/10/2020 - added change with no visibility in centre (blair94)
+
+v1.3
+-center starts explored, rather than all visible
+
+v1.2
+-fish in the center is now exactly 30k worth of perch, marked clearly with some rocks
+-center is always revealed
+
+v1.1
+-shrunk the river ends to take up less space
+-added 2 more herdables
+-capped the number of neutral golds at 7 piles and stones at 5 piles for 1v1
+*/
+
+#const DEAD_FARM 8
+#const GRAVEL 70
+#const MUD 76
+#const BUSH_FOREST 89
+
+/* placeholder objects */
+#const ONGRID_PLACEHOLDER 278
+#const FLARE 112
+
+/* =================================================================================================== */
+<PLAYER_SETUP>
+
+random_placement 
+ai_info_map_type CUSTOM 0 0 0
+
+
+/* =================================================================================================== */
+<LAND_GENERATION>
+
+base_terrain DIRT3
+
+create_player_lands {
+	terrain_type GRASS
+	land_percent 100
+	base_size 0
+	circle_radius 30
+	left_border 15	right_border 15 top_border 15 bottom_border 15
+	border_fuzziness 100
+	zone 1
+}
+
+create_land {
+	terrain_type SHALLOW
+	land_percent 100
+	base_size 0
+	land_position 50 50
+	left_border 46	right_border 46 top_border 46 bottom_border 46
+	border_fuzziness 100
+	zone 1
+	land_id 1
+}
+
+/* =================================================================================================== */
+<TERRAIN_GENERATION>
+
+create_terrain WATER {
+	base_terrain SHALLOW
+	land_percent 100
+	number_of_clumps 9320
+	spacing_to_other_terrain_types 1
+}
+create_terrain MED_WATER {
+	base_terrain WATER
+	land_percent 100
+	number_of_clumps 9320
+	spacing_to_other_terrain_types 1
+	terrain_mask 1
+}
+
+create_terrain FOREST {
+	base_terrain DIRT3
+	land_percent 100
+	number_of_clumps 9320
+	spacing_to_other_terrain_types 0
+}
+
+create_terrain DEAD_FARM {
+	base_terrain FOREST
+	land_percent 100
+	number_of_clumps 9320
+	spacing_to_other_terrain_types 4
+}
+
+create_terrain DLC_BLACK {
+	base_terrain DEAD_FARM
+	land_percent 100
+	number_of_clumps 9320
+	spacing_to_other_terrain_types 1
+}
+
+create_terrain DLC_BLACK {
+	base_terrain DEAD_FARM
+	land_percent 100
+	number_of_clumps 9320
+	spacing_to_other_terrain_types 1
+}
+
+create_terrain GRASS2 {
+	base_terrain GRASS
+	land_percent 100
+	number_of_clumps 9320
+	set_avoid_player_start_areas
+}
+
+create_terrain DLC_ROCK {
+	base_terrain GRASS2
+	land_percent 100
+	number_of_clumps 9320
+	spacing_to_other_terrain_types 10
+}
+create_terrain DIRT3 {
+	base_terrain DLC_ROCK
+	land_percent 100
+	number_of_clumps 9320
+	spacing_to_other_terrain_types 1
+}
+create_terrain GRAVEL {
+	base_terrain DLC_ROCK
+	land_percent 100
+	number_of_clumps 9320
+	terrain_mask 1
+}
+
+create_terrain BUSH_FOREST {
+	base_terrain DIRT3
+	land_percent 1
+	number_of_clumps 20
+	spacing_to_other_terrain_types 1
+	set_scale_by_groups
+}
+
+/* cosmetic terrain mixing */
+create_terrain GRASS3 {
+	base_terrain GRASS2
+	land_percent 5
+	number_of_clumps 10
+	set_scale_by_groups
+	terrain_mask 1
+}
+create_terrain DLC_DRYGRASS {
+	base_terrain GRASS2
+	land_percent 5
+	number_of_clumps 10
+	set_scale_by_groups
+	terrain_mask 1
+}
+create_terrain DLC_JUNGLEGRASS {
+	base_terrain GRASS2
+	land_percent 5
+	number_of_clumps 10
+	set_scale_by_groups
+	terrain_mask 1
+}
+create_terrain MUD {
+	base_terrain GRASS2
+	land_percent 5
+	number_of_clumps 10
+	set_scale_by_groups
+	terrain_mask 1
+}
+
+
+/* =================================================================================================== */
+<CONNECTION_GENERATION>
+
+create_connect_to_nonplayer_land {
+
+	replace_terrain GRASS2 WATER
+	replace_terrain DIRT3 WATER
+	replace_terrain BEACH SHALLOW
+	replace_terrain DLC_ROCK WATER
+	terrain_size GRASS2 1 0
+	terrain_size DIRT3 1 0
+	terrain_size DLC_ROCK 1 0
+	terrain_size BUSH_FOREST 1 0
+	terrain_size WATER 0 0
+	terrain_size BEACH 0 0
+	terrain_size SHALLOW 0 0
+}
+
+/* =================================================================================================== */
+<OBJECTS_GENERATION>
+
+create_object DLC_BOULDER_B {
+	number_of_objects 9320
+	set_scaling_to_map_size
+	terrain_to_place_on DEAD_FARM
+}
+
+create_object TOWN_CENTER {
+	set_place_for_every_player
+	max_distance_to_players 0
+}
+
+create_object PALISADE_WALL {
+	set_place_for_every_player
+	min_distance_to_players 17
+	max_distance_to_players 17
+	actor_area 6730
+	actor_area_radius 4
+}
+
+
+create_object VILLAGER {
+	set_place_for_every_player
+	min_distance_to_players 6
+	find_closest
+	actor_area 777
+}
+if REGICIDE	create_object KING
+else create_object SCOUT
+endif
+{
+	set_place_for_every_player
+	min_distance_to_players 6
+	find_closest
+	avoid_actor_area 777
+}
+if REGICIDE
+	create_object VILLAGER {
+		number_of_objects 7
+		set_place_for_every_player
+		min_distance_to_players 6
+		max_distance_to_players 8
+	}
+	create_object CASTLE {
+		set_place_for_every_player
+		min_distance_to_players 9
+		max_distance_to_players 11
+		min_distance_group_placement 2
+		avoid_forest_zone 4
+	}
+endif
+
+/* enable resources from controlling the monument in KoTH */
+#const MONUMENT_RESOURCES 1639
+if KING_OT_HILL
+	create_object MONUMENT_RESOURCES {
+		set_place_for_every_player
+		max_distance_to_players 3
+	}
+endif
+
+if EMPIRE_WARS
+/* please contact Zetnus to implement empire wars :p */
+endif
+
+/* infinite fish in the center */
+create_object FISH {
+	second_object SEA_ROCKS_2
+	place_on_specific_land_id 1
+	max_distance_to_players 0
+	resource_delta 29800
+}
+/*
+create_object FLARE {
+	number_of_objects 100
+	set_place_for_every_player
+	temp_min_distance_group_placement 1
+	layer_to_place_on MED_WATER
+}
+*/
+/* by the bushes */
+create_object FORAGE {
+	number_of_objects 9320
+	terrain_to_place_on BUSH_FOREST
+}
+
+create_object ONGRID_PLACEHOLDER {
+	second_object SHORE_FISH
+	terrain_to_place_on WATER
+	set_place_for_every_player
+	set_gaia_object_only
+	find_closest
+	actor_area 2009
+	actor_area_radius 9
+}
+
+
+/* near forage */
+create_object DLC_ORANGEBUSH {
+	number_of_objects 4
+	group_placement_radius 1
+	set_tight_grouping
+	set_gaia_object_only
+	set_place_for_every_player
+	min_distance_to_players 8
+	max_distance_to_players 11
+	min_distance_group_placement 3
+	avoid_forest_zone 2
+	avoid_actor_area 2009
+}
+
+/* near gold */
+create_object GOLD {
+	number_of_objects 4
+	number_of_groups 2
+	group_placement_radius 1
+	set_tight_grouping
+	set_gaia_object_only
+	set_place_for_every_player
+	min_distance_to_players 10
+	max_distance_to_players 15
+	min_distance_group_placement 3
+	max_distance_to_other_zones 4
+	temp_min_distance_group_placement 8
+	avoid_forest_zone 3
+	avoid_actor_area 6730
+}
+
+/* near stone */
+create_object STONE {
+	number_of_objects 3
+	number_of_groups 2
+	group_placement_radius 1
+	set_tight_grouping
+	set_gaia_object_only
+	set_place_for_every_player
+	min_distance_to_players 10
+	max_distance_to_players 15
+	min_distance_group_placement 3
+	max_distance_to_other_zones 4
+	temp_min_distance_group_placement 8
+	avoid_forest_zone 3
+	avoid_actor_area 6730
+}
+
+/* relics */
+create_object RELIC {
+	terrain_to_place_on DIRT3
+	min_distance_group_placement 1
+	if TINY_MAP
+		number_of_objects 5
+		temp_min_distance_group_placement 11
+	elseif SMALL_MAP
+		number_of_objects 5
+		temp_min_distance_group_placement 12
+	elseif MEDIUM_MAP
+		number_of_objects 5
+		temp_min_distance_group_placement 13
+	elseif LARGE_MAP
+		number_of_objects 7
+		temp_min_distance_group_placement 14
+	elseif HUGE_MAP
+		number_of_objects 8
+		temp_min_distance_group_placement 15
+	else
+		number_of_objects 999
+		temp_min_distance_group_placement 35
+	endif
+}
+
+if DEATH_MATCH
+elseif DEFEND_WONDER
+else
+
+/* starting sheep - start with 1 under your control */
+create_object DLC_PIG {
+	number_of_objects 3
+	set_loose_grouping
+	set_gaia_object_only
+	set_place_for_every_player
+	min_distance_to_players 7
+	max_distance_to_players 8
+	actor_area 6
+	actor_area_radius 1
+}
+create_object DLC_PIG {
+	number_of_objects 1
+	set_place_for_every_player
+	min_distance_to_players 7
+	max_distance_to_players 8
+	actor_area_to_place_in 6
+}
+
+/* more sheep */
+create_object SHEEP {
+	number_of_objects 2
+	number_of_groups 2
+	set_loose_grouping
+	set_gaia_object_only
+	set_place_for_every_player
+	min_distance_to_players 9
+	max_distance_to_players 12
+	avoid_forest_zone 1
+	min_distance_group_placement 1
+	temp_min_distance_group_placement 4
+}
+
+/* boar */
+create_object BOAR {
+	number_of_groups 2
+	set_gaia_object_only
+	set_place_for_every_player
+	avoid_forest_zone 1
+	min_distance_to_players 12
+	max_distance_to_players 16
+}
+
+/* scattered hunt */
+create_object DEER {
+	number_of_groups 9320
+	terrain_to_place_on DIRT3
+	set_gaia_object_only
+	min_distance_group_placement 1
+	temp_min_distance_group_placement 9
+}
+
+create_object DLC_AUTUMNTREE {
+	number_of_objects 2
+	set_gaia_object_only
+	set_place_for_every_player
+	min_distance_to_players 4
+	max_distance_to_players 5
+	min_distance_group_placement 1
+}
+create_object DLC_AUTUMNTREE {
+	number_of_objects 3
+	set_gaia_object_only
+	set_place_for_every_player
+	min_distance_to_players 6
+	max_distance_to_players 8
+	min_distance_group_placement 1
+	avoid_forest_zone 2
+}
+
+endif
+
+
+/* scattered gold */
+create_object GOLD {
+	if TINY_MAP number_of_groups 7
+	else number_of_groups 9320
+	endif
+	number_of_objects 3
+	set_tight_grouping
+	set_gaia_object_only
+	min_distance_to_players 25
+	min_distance_group_placement 3
+	temp_min_distance_group_placement 21
+	terrain_to_place_on GRASS2
+	avoid_forest_zone 3
+}
+
+/* scattered stone */
+create_object STONE {
+	if TINY_MAP
+		number_of_groups 5
+		temp_min_distance_group_placement 23
+	else
+		number_of_groups 9320
+		temp_min_distance_group_placement 26
+	endif
+	number_of_objects 2
+	set_tight_grouping
+	set_gaia_object_only
+	min_distance_to_players 28
+	min_distance_group_placement 2
+	
+	terrain_to_place_on GRASS2
+	avoid_forest_zone 3
+}
+
+/* birds */
+create_object HAWK {
+	number_of_objects 6
+	set_scaling_to_map_size
+}
+
+
+
+
