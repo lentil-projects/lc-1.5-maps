@@ -6,6 +6,8 @@ Put the file(s) into your AoE game directory - path should look something like /
 _You may have to make a random-map-scripts folder if it doesn't already exist._ 
 
 ## Map Notes
-**Canberra** by Zetnus (from the Outback Rumble map pool)
+**Canberra** by Zetnus (Outback Rumble map pool)
+
+**ZeWall** by Bazidrown
 
 MegaRandom, Golden Swamp, and Michi available in game. 
