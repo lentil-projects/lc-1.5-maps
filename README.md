@@ -7,3 +7,5 @@ _You may have to make a random-map-scripts folder if it doesn't already exist._
 
 ## Map Notes
 **Canberra** by Zetnus (from the Outback Rumble map pool)
+
+MegaRandom, Golden Swamp, and Michi available in game. 
